@@ -9,9 +9,9 @@
 
 function findEmailInput() {
     return (
-        document.querySelector('input[type="email"]')             ||
-        document.querySelector('input[type="text"]')              ||
-        document.querySelector('input[placeholder*="email" i]')   ||
+        document.querySelector('input[type="email"]') ||
+        document.querySelector('input[type="text"]') ||
+        document.querySelector('input[placeholder*="email" i]') ||
         document.querySelector('input[placeholder*="username" i]')
     );
 }
@@ -31,8 +31,8 @@ function injectHampterButton(loginBtn) {
     if (document.getElementById("hampter-btn")) return;
 
     const btn = document.createElement("button");
-    btn.id        = "hampter-btn";
-    btn.type      = "button";
+    btn.id = "hampter-btn";
+    btn.type = "button";
     btn.textContent = "🐹 Log in with Hampter";
     btn.style.cssText = `
         display:        block;
@@ -101,8 +101,8 @@ async function handleHampterLogin(btn) {
     // 4. Ask background.js to watch for the magic link email
     setStatus(btn, "📬 Waiting for magic link email...", "#ff8c00");
     const linkResult = await sendMessage({
-        type:   "GET_MAGIC_LINK",
-        token:  tokenResult.token,
+        type: "GET_MAGIC_LINK",
+        token: tokenResult.token,
         config: {
             sender: sender || "noreply@atlantis.education",
             domain: domain || "atlantis.education",
@@ -146,14 +146,20 @@ function fillInput(input, value) {
         window.HTMLInputElement.prototype, "value"
     ).set;
     nativeSetter.call(input, value);
-    input.dispatchEvent(new Event("input",  { bubbles: true }));
+    input.dispatchEvent(new Event("input", { bubbles: true }));
     input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 function setStatus(btn, text, color) {
-    btn.textContent      = text;
+    btn.textContent = text;
     btn.style.background = color;
-    btn.style.fontSize   = "13px";
+    btn.style.fontSize = "13px";
+    // Persist errors to storage so the popup can display them
+    if (color === "#c0392b") {
+        chrome.storage.local.set({ hampter_last_error: text });
+    } else {
+        chrome.storage.local.remove("hampter_last_error");
+    }
 }
 
 // ── Entry point ───────────────────────────────────────────

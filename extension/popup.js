@@ -3,9 +3,12 @@ const saveBtn = document.getElementById("saveBtn");
 const statusEl = document.getElementById("status");
 
 // ── Load saved email on open ──────────────────────────────
-chrome.storage.local.get("hampter_email", (data) => {
+chrome.storage.local.get(["hampter_email", "hampter_last_error"], (data) => {
     if (data.hampter_email) {
         emailInput.value = data.hampter_email;
+    }
+    if (data.hampter_last_error) {
+        showStatus(data.hampter_last_error, "error", false);
     }
 });
 
@@ -29,8 +32,10 @@ emailInput.addEventListener("keydown", (e) => {
 });
 
 // ── Helpers ───────────────────────────────────────────────
-function showStatus(msg, type) {
+function showStatus(msg, type, autoHide = true) {
     statusEl.textContent = msg;
     statusEl.className = `status ${type}`;
-    setTimeout(() => { statusEl.className = "status hidden"; }, 2500);
+    if (autoHide) {
+        setTimeout(() => { statusEl.className = "status hidden"; }, 2500);
+    }
 }
