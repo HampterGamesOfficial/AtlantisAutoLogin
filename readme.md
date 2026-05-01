@@ -1,7 +1,7 @@
 # 🐹 Hampter Login
 
 A Chrome extension that automatically logs into [Atlantis Education](https://atlantis.education)
-by reading your Gmail magic link and navigating to it — no server, no setup, just install and go.
+by reading your Gmail magic link and navigating to it on your behalf — no server, no setup, just install and go.
 
 Developed by **Hampter Games** · MIT License · Copyright © 2026 Hampter Games
 
@@ -15,17 +15,16 @@ Developed by **Hampter Games** · MIT License · Copyright © 2026 Hampter Games
 4. The extension watches your inbox for the magic link email
 5. The link is found and you're logged in automatically
 
-Everything runs inside Chrome — no Python, no local server, nothing to keep running.
+Everything runs inside Chrome — no Python, no local server, nothing to install or keep running.
 
 ---
 
 ## Install
 
-1. Download or clone this repository
-2. Copy `extension/manifest.example.json` to `extension/manifest.json`
-3. Fill in your login URL and OAuth Client ID in `manifest.json`
-4. Go to `chrome://extensions` → enable **Developer mode** → **Load unpacked** → select the `extension/` folder
-5. Click the 🐹 icon in the toolbar → enter your Gmail address → **Save**
+1. Download the latest release zip from the [Releases](https://github.com/hamptergamesofficial/AtlantisAutoLogin/releases) page
+2. Unzip the folder
+3. Go to `chrome://extensions` → enable **Developer mode** → **Load unpacked** → select the unzipped folder
+4. Click the 🐹 icon in the toolbar → enter your Gmail address → **Save**
 
 That's it. Navigate to the Atlantis login page and click the orange button.
 
@@ -39,18 +38,30 @@ The extension only ever reads emails from Atlantis Education.
 
 ---
 
-## Files excluded from this repository
+## File structure
 
-`extension/manifest.json` is excluded via `.gitignore` as it contains your
-personal OAuth Client ID and login URL. Use `manifest.example.json` as the
-template.
+```
+AtlantisAutoLogin/
+├── extension/
+│   ├── manifest.json
+│   ├── background.js
+│   ├── content_script.js
+│   ├── popup.html
+│   ├── popup.js
+│   ├── icon.png
+│   └── icon.svg
+├── privacy.html
+├── tos.html
+├── LICENSE
+└── README.md
+```
 
 ---
 
 ## Privacy
 
 No data is collected, transmitted, or stored outside your own device.
-Read the full [Privacy Policy](./privacy.html).
+Read the full [Privacy Policy](https://hamptergamesofficial.github.io/AtlantisAutoLogin/privacy.html).
 
 ---
 

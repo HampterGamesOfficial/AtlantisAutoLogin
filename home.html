@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hampter Autologin — Auto-login for Atlantis Education</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --orange: #ff8c00;
+            --orange-dark: #d97200;
+            --orange-pale: #fff4e6;
+            --ink: #1a1008;
+            --ink-mid: #5a4a35;
+            --ink-light: #9a8570;
+            --cream: #fdf8f2;
+            --white: #ffffff;
+            --border: #ecddc9;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--cream);
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(253, 248, 242, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        .nav-brand .emoji {
+            font-size: 22px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink-mid);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange);
+        }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -56%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(ellipse at center, rgba(255, 140, 0, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--orange-pale);
+            border: 1px solid #ffd49e;
+            border-radius: 100px;
+            padding: 5px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--orange-dark);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards 0.1s;
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(52px, 8vw, 96px);
+            font-weight: 700;
+            line-height: 1.0;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            max-width: 800px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease forwards 0.25s;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--orange);
+        }
+
+        .hero-sub {
+            margin-top: 24px;
+            font-size: 18px;
+            color: var(--ink-mid);
+            max-width: 480px;
+            line-height: 1.65;
+            opacity: 0;
+            animation: fadeUp 0.7s ease forwards 0.4s;
+        }
+
+        .hero-actions {
+            margin-top: 40px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeUp 0.7s ease forwards 0.55s;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--orange);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(255, 140, 0, 0.35);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--white);
+            color: var(--ink);
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1.5px solid var(--border);
+            transition: border-color 0.15s, transform 0.15s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--orange);
+            transform: translateY(-2px);
+        }
+
+        /* ── Steps ── */
+        .steps-section {
+            padding: 100px 24px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--orange);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 60px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2px;
+            background: var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .step-card {
+            background: var(--cream);
+            padding: 36px 32px;
+        }
+
+        .step-number {
+            font-family: 'Fraunces', serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--orange);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .step-icon {
+            font-size: 32px;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .step-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            font-size: 14px;
+            color: var(--ink-light);
+            line-height: 1.6;
+        }
+
+        /* ── Why section ── */
+        .why-section {
+            padding: 100px 24px;
+            background: var(--ink);
+            color: var(--cream);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .why-section::before {
+            content: '🐹';
+            position: absolute;
+            font-size: 400px;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.04;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .why-section .section-label {
+            color: #ff8c00;
+        }
+
+        .why-section .section-title {
+            color: var(--cream);
+            margin-bottom: 48px;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .why-item .icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 140, 0, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .why-item h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--cream);
+            margin-bottom: 6px;
+        }
+
+        .why-item p {
+            font-size: 14px;
+            color: #9a8a78;
+            line-height: 1.6;
+        }
+
+        /* ── Install ── */
+        .install-section {
+            padding: 100px 24px;
+        }
+
+        .install-box {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 56px 48px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .install-text h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .install-text p {
+            font-size: 15px;
+            color: var(--ink-mid);
+            margin-bottom: 28px;
+            line-height: 1.65;
+        }
+
+        .install-steps {
+            counter-reset: step;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .install-steps li {
+            counter-increment: step;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--ink-mid);
+            line-height: 1.55;
+        }
+
+        .install-steps li::before {
+            content: counter(step);
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--orange-pale);
+            color: var(--orange-dark);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'DM Mono', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+        }
+
+        .install-steps code {
+            font-family: 'DM Mono', monospace;
+            background: #f0ebe3;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--ink);
+        }
+
+        /* ── Footer ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 36px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-brand {
+            font-family: 'Fraunces', serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: var(--ink-light);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .footer-links a:hover {
+            color: var(--orange);
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--ink-light);
+            font-family: 'DM Mono', monospace;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 700px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .install-box {
+                grid-template-columns: 1fr;
+                gap: 36px;
+                padding: 36px 24px;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 28px 20px;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a class="nav-brand" href="#">
+            <span class="emoji">🐹</span>
+            Hampter Autologin
+        </a>
+        <ul class="nav-links">
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#install">Install</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="https://github.com/hamptergamesofficial/AtlantisAutoLogin" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">🐹 Chrome Extension · Free &amp; Open Source</div>
+        <h1>Login to Atlantis.<br><em>Automatically.</em></h1>
+        <p class="hero-sub">
+            Hampter Autologin reads your Gmail magic link and logs you in — one click,
+            no copying, no waiting, no server required.
+        </p>
+        <p style="margin-top:12px;font-size:13px;color:var(--ink-light)">
+            By using this extension you agree to our <a href="privacy.html" style="color:var(--orange)">Privacy
+                Policy</a> and <a href="tos.html" style="color:var(--orange)">Terms of Service</a>.
+        </p>
+        <div class="hero-actions">
+            <a class="btn-primary" href="https://github.com/hamptergamesofficial/AtlantisAutoLogin/releases"
+                target="_blank">
+                Download latest release
+            </a>
+            <a class="btn-secondary" href="https://github.com/hamptergamesofficial/AtlantisAutoLogin" target="_blank">
+                View on GitHub
+            </a>
+        </div>
+    </section>
+
+    <section class="steps-section" id="how-it-works">
+        <div class="container">
+            <p class="section-label">How it works</p>
+            <h2 class="section-title">Five steps, zero effort</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <p class="step-number">Step 01</p>
+                    <span class="step-icon">🐹</span>
+                    <h3>Click the button</h3>
+                    <p>An orange <strong>Log in with Hampter</strong> button appears below the Atlantis login button
+                        automatically.</p>
+                </div>
+                <div class="step-card">
+                    <p class="step-number">Step 02</p>
+                    <span class="step-icon">✉️</span>
+                    <h3>Form submitted</h3>
+                    <p>The extension fills in your email address and submits the Atlantis login form on your behalf.</p>
+                </div>
+                <div class="step-card">
+                    <p class="step-number">Step 03</p>
+                    <span class="step-icon">🔐</span>
+                    <h3>Gmail access granted</h3>
+                    <p>Chrome asks for one-time permission to read your Gmail. Click Allow — this only happens once.</p>
+                </div>
+                <div class="step-card">
+                    <p class="step-number">Step 04</p>
+                    <span class="step-icon">📬</span>
+                    <h3>Magic link found</h3>
+                    <p>The extension watches your inbox and locates the login email from Atlantis as soon as it arrives.
+                    </p>
+                </div>
+                <div class="step-card">
+                    <p class="step-number">Step 05</p>
+                    <span class="step-icon">✅</span>
+                    <h3>You're in</h3>
+                    <p>The magic link is followed automatically. You're logged in before you've had time to check your
+                        inbox.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="why-section">
+        <div class="container">
+            <p class="section-label">Why Hampter Login</p>
+            <h2 class="section-title">Built to stay out of your way</h2>
+            <div class="why-grid">
+                <div class="why-item">
+                    <div class="icon">🚫</div>
+                    <h3>No server</h3>
+                    <p>Everything runs inside Chrome. Nothing to install, nothing to keep running.</p>
+                </div>
+                <div class="why-item">
+                    <div class="icon">🔒</div>
+                    <h3>Private by design</h3>
+                    <p>Your email and Gmail content never leave your device. No external servers, ever.</p>
+                </div>
+                <div class="why-item">
+                    <div class="icon">⚡</div>
+                    <h3>One click</h3>
+                    <p>From clicking the button to being logged in — typically under 10 seconds.</p>
+                </div>
+                <div class="why-item">
+                    <div class="icon">📖</div>
+                    <h3>Open source</h3>
+                    <p>MIT licensed. Read every line of code on GitHub. No surprises.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="install-section" id="install">
+        <div class="container">
+            <div class="install-box">
+                <div class="install-text">
+                    <h2>Up and running in under a minute</h2>
+                    <p>
+                        Download the latest release and load it as an unpacked extension —
+                        no Chrome Web Store, no build steps, no configuration needed.
+                    </p>
+                    <a class="btn-primary" href="https://github.com/hamptergamesofficial/AtlantisAutoLogin/releases"
+                        target="_blank">
+                        Download latest release ↗
+                    </a>
+                </div>
+                <div>
+                    <ol class="install-steps">
+                        <li>Download the latest release zip from GitHub Releases and unzip it</li>
+                        <li>Go to <code>chrome://extensions</code> and enable <strong>Developer mode</strong></li>
+                        <li>Click <strong>Load unpacked</strong> and select the unzipped folder</li>
+                        <li>Click the 🐹 icon in your toolbar, enter your Gmail address, and hit <strong>Save</strong>
+                        </li>
+                        <li>Visit the Atlantis login page — your new button is already there</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span class="footer-brand">🐹 Hampter Autologin</span>
+        <ul class="footer-links">
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="tos.html">Terms of Service</a></li>
+            <li><a href="https://github.com/hamptergamesofficial/AtlantisAutoLogin" target="_blank">GitHub</a></li>
+        </ul>
+        <span class="footer-copy">MIT © 2026 Hampter Games</span>
+    </footer>
+
+</body>
+
+</html>
