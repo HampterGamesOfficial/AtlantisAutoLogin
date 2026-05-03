@@ -62,7 +62,7 @@ async function handleHampterLogin(btn) {
     btn.disabled = true;
 
     // 1. Load saved email and config
-    const { hampter_email: emails, hampter_sender: sender, hampter_domain: domain }
+    const { hampter_email: email, hampter_sender: sender, hampter_domain: domain }
         = await chromeGet(["hampter_email", "hampter_sender", "hampter_domain"]);
 
     if (!email) {
