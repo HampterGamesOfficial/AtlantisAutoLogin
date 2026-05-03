@@ -1,7 +1,7 @@
 # 🐹 Hampter Login
 
 A Chrome extension that automatically logs into [Atlantis Education](https://atlantis.education)
-by reading your Gmail magic link and navigating to it on your behalf — no server, no setup, just install and go.
+by reading your Gmail magic link and navigating to it on your behalf — just install and go.
 
 Developed by **Hampter Games** · MIT License · Copyright © 2026 Hampter Games
 
@@ -15,7 +15,7 @@ Developed by **Hampter Games** · MIT License · Copyright © 2026 Hampter Games
 4. The extension watches your inbox for the magic link email
 5. The link is found and you're logged in automatically
 
-Everything runs inside Chrome — no Python, no local server, nothing to install or keep running.
+Everything runs inside Chrome.
 
 ---
 
