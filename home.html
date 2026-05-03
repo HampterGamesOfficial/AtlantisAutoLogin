@@ -408,8 +408,6 @@
             font-size: 14px;
             color: var(--ink-mid);
             line-height: 1.55;
-            word-break: normal;
-            overflow-wrap: anywhere;
         }
 
         .install-steps li::before {
@@ -436,11 +434,6 @@
             border-radius: 4px;
             font-size: 13px;
             color: var(--ink);
-            white-space: nowrap;
-        }
-
-        .install-steps strong {
-            white-space: nowrap;
         }
 
         /* ── Footer ── */
@@ -649,10 +642,9 @@
                 <div>
                     <ol class="install-steps">
                         <li>Download the latest release zip from GitHub Releases and unzip it</li>
-                        <li>Open <code>chrome://extensions</code> and turn on <strong>Developer mode</strong></li>
-                        <li>Click <strong>Load unpacked</strong> and choose the unzipped folder</li>
-                        <li>Click the 🐹 icon in your toolbar, enter your Gmail address, then hit <strong>Save</strong>
-                            to store it</li>
+                        <li>Open chrome://extensions in Chrome and turn on Developer mode</li>
+                        <li>Click Load unpacked and choose the unzipped folder</li>
+                        <li>Click the 🐹 icon in your toolbar, enter your Gmail address, and save it</li>
                         <li>Visit the Atlantis login page — your new button is already there</li>
                     </ol>
                 </div>
