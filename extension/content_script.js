@@ -18,16 +18,43 @@ function findEmailInput() {
 
 function findLoginButton() {
     const buttons = Array.from(
-        document.querySelectorAll("button, input[type='submit']")
+        document.querySelectorAll("button, input[type='submit'], input[type='button']")
     );
-    return buttons.find((b) =>
-        /login|sign\s*in/i.test(b.textContent || b.value || "")
+
+    // 1. Prefer an explicit login/sign-in label
+    const explicit = buttons.find((b) =>
+        /login|log\s*in|sign\s*in|continue|submit/i.test(b.textContent || b.value || "")
+    );
+    if (explicit) return explicit;
+
+    // 2. Fall back to any submit input
+    const submitInput = document.querySelector("input[type='submit']");
+    if (submitInput) return submitInput;
+
+    // 3. Fall back to the last button inside a form (most likely the submit)
+    const formButtons = Array.from(document.querySelectorAll("form button"));
+    if (formButtons.length) return formButtons[formButtons.length - 1];
+
+    // 4. Last resort: any visible button on the page
+    return buttons.find((b) => {
+        const style = window.getComputedStyle(b);
+        return style.display !== "none" && style.visibility !== "hidden";
+    }) || null;
+}
+
+function findAnchorPoint() {
+    // Somewhere sensible to attach the Hampter button even if no login btn found
+    return (
+        findEmailInput()?.closest("form") ||
+        document.querySelector("form") ||
+        document.querySelector("main") ||
+        document.body
     );
 }
 
 // ── Inject the Hampter button ─────────────────────────────
 
-function injectHampterButton(loginBtn) {
+function injectHampterButton(anchorEl, afterEl = null) {
     if (document.getElementById("hampter-btn")) return;
 
     const btn = document.createElement("button");
@@ -52,7 +79,12 @@ function injectHampterButton(loginBtn) {
     btn.onmouseenter = () => (btn.style.background = "#e07b00");
     btn.onmouseleave = () => (btn.style.background = "#ff8c00");
 
-    loginBtn.parentNode.insertBefore(btn, loginBtn.nextSibling);
+    if (afterEl && afterEl.parentNode) {
+        afterEl.parentNode.insertBefore(btn, afterEl.nextSibling);
+    } else {
+        anchorEl.appendChild(btn);
+    }
+
     btn.addEventListener("click", () => handleHampterLogin(btn));
 }
 
@@ -83,7 +115,7 @@ async function handleHampterLogin(btn) {
     fillInput(emailInput, email);
 
     const loginBtn = findLoginButton();
-    if (loginBtn) {
+    if (loginBtn && loginBtn.id !== "hampter-btn") {
         loginBtn.click();
     } else {
         emailInput.closest("form")?.submit();
@@ -165,19 +197,29 @@ function setStatus(btn, text, color) {
 // ── Entry point ───────────────────────────────────────────
 
 (function init() {
-    const loginBtn = findLoginButton();
-    if (loginBtn) {
-        injectHampterButton(loginBtn);
-        return;
+    function tryInject() {
+        const loginBtn = findLoginButton();
+        if (loginBtn) {
+            injectHampterButton(loginBtn.parentNode || document.body, loginBtn);
+            return true;
+        }
+        // If there's at least an email field, attach to its form anyway
+        const emailInput = findEmailInput();
+        if (emailInput) {
+            const anchor = findAnchorPoint();
+            injectHampterButton(anchor, null);
+            return true;
+        }
+        return false;
     }
 
-    // Page may be JS-rendered — wait for the button to appear in the DOM
+    if (tryInject()) return;
+
+    // Page may be JS-rendered — wait for the DOM to settle
     const observer = new MutationObserver(() => {
-        const btn = findLoginButton();
-        if (btn) {
-            observer.disconnect();
-            injectHampterButton(btn);
-        }
+        if (tryInject()) observer.disconnect();
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+
+    const root = document.body || document.documentElement;
+    observer.observe(root, { childList: true, subtree: true });
 })();
