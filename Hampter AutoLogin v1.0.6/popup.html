@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hampter Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #ffffff;
+      width: 280px;
+      padding: 20px;
+      color: #1a1a1a;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .header .emoji {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .header p {
+      font-size: 11px;
+      color: #888;
+      margin-top: 1px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    input[type="email"] {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #1a1a1a;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="email"]:focus {
+      border-color: #ff8c00;
+    }
+
+    input[type="email"]::placeholder {
+      color: #bbb;
+    }
+
+    .save-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 10px;
+      background: #ff8c00;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .save-btn:hover {
+      background: #e07b00;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 12px;
+      text-align: center;
+      min-height: 16px;
+      line-height: 1.4;
+      transition: opacity 0.3s;
+    }
+
+    .status.success {
+      color: #2e7d32;
+    }
+
+    .status.error {
+      color: #c62828;
+    }
+
+    .status.hidden {
+      opacity: 0;
+    }
+
+    .divider {
+      margin: 16px 0;
+      border: none;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #999;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .update-banner {
+      display: none;
+      margin-bottom: 16px;
+      padding: 10px 12px;
+      background: #fff8f0;
+      border: 1.5px solid #ffd49e;
+      border-radius: 8px;
+      font-size: 11px;
+      color: #8a5000;
+      line-height: 1.5;
+    }
+
+    .update-banner a {
+      color: #ff8c00;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .update-banner a:hover {
+      text-decoration: underline;
+    }
+
+    .activity {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #fafafa;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .activity-dot.idle       { background: #d0d0d0; }
+    .activity-dot.oauth      { background: #ff8c00; animation: pulse 1.2s infinite; }
+    .activity-dot.checking   { background: #1a73e8; animation: pulse 1.2s infinite; }
+    .activity-dot.logging-in { background: #2e7d32; animation: pulse 1.2s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.35; }
+    }
+
+    .activity-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #999;
+      transition: color 0.3s;
+    }
+
+    .activity-label.oauth      { color: #e07b00; }
+    .activity-label.checking   { color: #1a73e8; }
+    .activity-label.logging-in { color: #2e7d32; }
+
+    .clear-btn {
+      margin-top: 8px;
+      width: 100%;
+      padding: 8px;
+      background: none;
+      color: #bbb;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .clear-btn:hover {
+      color: #c62828;
+      border-color: #f5c0c0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="update-banner" id="updateBanner"></div>
+
+  <div class="header">
+    <div class="emoji">🐹</div>
+    <div>
+      <h1>Hampter AutoLogin</h1>
+      <p>Auto-login for Atlantis</p>
+    </div>
+  </div>
+
+  <div class="activity" id="activityBar">
+    <div class="activity-dot idle" id="activityDot"></div>
+    <span class="activity-label" id="activityLabel">Idle</span>
+  </div>
+
+  <label for="emailInput">Your Gmail address</label>
+  <input type="email" id="emailInput" placeholder="you@gmail.com" autocomplete="off" />
+
+  <button class="save-btn" id="saveBtn">Save</button>
+  <div class="status hidden" id="status"></div>
+  <button class="clear-btn" id="clearBtn">Clear saved data</button>
+
+  <hr class="divider" />
+
+  <p class="hint">
+    Visit the Atlantis login page and click<br>
+    <strong>🐹 Log in with Hampter</strong>
+  </p>
+
+  <hr class="divider" />
+
+  <p style="font-size:10px; color:#bbb; text-align:center; line-height:1.5;">
+    Made by <strong style="color:#999;">Hampter Games</strong>. Independent open source project — not endorsed by,
+    associated with, or affiliated with Atlantis Education or any other organisation.
+  </p>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
