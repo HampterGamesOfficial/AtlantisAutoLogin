@@ -94,9 +94,10 @@
     and extract the magic link URL it contains.
   </p>
   <p>
-    The only other piece of data the extension stores is your email address,
-    which you voluntarily enter into the extension's settings popup. This is
-    saved locally in your browser using Chrome's built-in storage API
+    The only other pieces of data the extension stores are your email address,
+    which you voluntarily enter into the extension's settings popup, and a refresh
+    token, sent by Google's APIs to ensure the correct account email is accessed.
+    These are saved locally in your browser using Chrome's built-in storage API
     (<code>chrome.storage.local</code>).
   </p>
 
@@ -107,7 +108,8 @@
     <li>Store any data outside of your own device</li>
     <li>Read any emails other than the specific login email from Atlantis Education</li>
     <li>Track, log, or analyse your usage in any way</li>
-    <li>Share any data with third parties under any circumstances</li>
+    <li>Share any data with third parties under any circumstances, with the exception of Google for verification, and
+      access purposes</li>
   </ul>
 
   <h2>How Gmail access works</h2>
@@ -131,7 +133,8 @@
     </li>
     <li>
       <strong>storage</strong> — allows the extension to save your email
-      address locally in your browser so you don't have to re-enter it.
+      address and OAuth refresh token locally in your browser so you don't
+      have to re-authenticate each time.
     </li>
     <li>
       <strong>gmail.readonly</strong> — allows the extension to search your
@@ -139,14 +142,40 @@
       the magic link URL. The extension cannot send, delete, or modify emails.
     </li>
   </ul>
+  <p>
+    The extension also declares the following host permissions, which are
+    required for it to function:
+  </p>
+  <ul>
+    <li>
+      <strong>a2.atlantis.education</strong> — allows the content script to
+      run on the Atlantis login page and inject the Hampter button.
+    </li>
+    <li>
+      <strong>www.googleapis.com</strong> — allows the extension to call
+      the Gmail API to search for and read your magic link email.
+    </li>
+    <li>
+      <strong>oauth2.googleapis.com</strong> — allows the extension to
+      exchange and refresh OAuth tokens with Google's authentication servers.
+    </li>
+    <li>
+      <strong>api.github.com</strong> — allows the popup to check for
+      available extension updates by querying the GitHub Releases API.
+      No personal data is sent in this request.
+    </li>
+  </ul>
 
   <h2>Data retention</h2>
   <p>
-    The only data retained is your email address in <code>chrome.storage.local</code>,
-    which stays on your device. You can delete it at any time by clicking
-    Clear saved data in the extension popup. Alternatively, removing the
-    extension will also erase all locally stored data. No data is held
-    anywhere else.
+    The only data retained locally on your device is your email address and
+    an OAuth refresh token issued by Google. The email address is what you
+    type into the extension popup. The refresh token is provided by Google
+    after you grant Gmail access, and is stored so the extension can silently
+    renew its Gmail access without prompting you again. Both are stored in
+    <code>chrome.storage.local</code> and never leave your device. You can
+    delete them at any time by clicking "Clear saved data" in the extension
+    popup. Removing the extension will also erase all locally stored data.
   </p>
 
   <h2>Children's privacy</h2>
