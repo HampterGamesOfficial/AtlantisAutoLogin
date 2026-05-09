@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Hampter AutoLogin",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "Automatically logs into Atlantis using your Gmail magic link.",
     "permissions": [
         "identity",

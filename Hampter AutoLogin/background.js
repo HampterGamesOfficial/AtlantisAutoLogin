@@ -14,7 +14,7 @@ const POLL_INTERVAL = 3000;  // ms between Gmail checks
 const TIMEOUT = 60000; // ms before giving up
 
 // ── Demo overrides (set to null for production) ───────────
-const DEBUG_GMAIL_QUERY = "Fwd: Your Magic Link to securely log in to Atlantis";;
+const DEBUG_GMAIL_QUERY = "Fwd: Your Magic Link to securely log in to Atlantis";
 
 // ── Message handler ───────────────────────────────────────
 
@@ -49,7 +49,7 @@ async function generatePKCE() {
     return { codeVerifier, codeChallenge };
 }
 
-// ── Auth token (launchWebAuthFlow + PKCE, no client secret) ──
+// ── Auth token (launchWebAuthFlow + PKCE) ─────────────────
 
 async function handleGetAuthToken(email, sendResponse) {
     setStatus("oauth");
@@ -91,6 +91,7 @@ async function handleGetAuthToken(email, sendResponse) {
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: new URLSearchParams({
                         client_id: clientId,
+                        client_secret: "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",
                         redirect_uri: redirectURL,
                         grant_type: "authorization_code",
                         code,
@@ -267,6 +268,7 @@ async function refreshToken(oldToken) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
             client_id: clientId,
+            client_secret: "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",
             grant_type: "refresh_token",
             refresh_token: storedRefreshToken,
         }),
