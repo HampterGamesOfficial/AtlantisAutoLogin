@@ -1,0 +1,49 @@
+{
+    "manifest_version": 3,
+    "name": "Hampter AutoLogin",
+    "version": "1.0.8",
+    "description": "Automatically logs into Atlantis using your Gmail magic link.",
+    "permissions": [
+        "identity",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://a2.atlantis.education/*",
+        "https://www.googleapis.com/*",
+        "https://api.github.com/*",
+        "https://oauth2.googleapis.com/*"
+    ],
+    "oauth2": {
+        "client_id": "498560839588-dbpmlotohgbp07gh130mnvqf16d3l807.apps.googleusercontent.com",
+        "scopes": [
+            "https://www.googleapis.com/auth/gmail.readonly"
+        ]
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://a2.atlantis.education/*",
+                "https://a2.atlantis.education/dataset/*"
+            ],
+            "exclude_matches": [
+                "https://a2.atlantis.education/*/Covers*"
+            ],
+            "js": [
+                "content_script.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Hampter AutoLogin"
+    },
+    "icons": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    }
+}
